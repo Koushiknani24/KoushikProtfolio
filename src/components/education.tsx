@@ -182,11 +182,10 @@ export function EducationSection() {
                 fontFamily: "var(--font-inter), sans-serif",
                 fontSize: "clamp(6rem, 12vw, 10rem)",
                 fontWeight: 900,
-                color: "#f0ebe0",
                 letterSpacing: "-0.05em",
                 lineHeight: 0.85,
-                textAlign: "right",
-                userSelect: "none",
+                textAlign: "right" as const,
+                userSelect: "none" as const,
                 WebkitTextStroke: "1px rgba(240,235,224,0.3)",
                 color: "transparent" as React.CSSProperties["color"],
               }}

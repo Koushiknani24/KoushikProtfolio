@@ -133,7 +133,7 @@ export function PortfolioHero() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to right, #080808 0%, rgba(8,8,8,0.92) 20%, rgba(8,8,8,0.65) 40%, rgba(8,8,8,0.15) 65%, transparent 80%)",
+              "linear-gradient(90deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0) 75%)",
           }}
         />
         {/* Bottom fade for scroll indicator */}
@@ -166,7 +166,7 @@ export function PortfolioHero() {
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "linear-gradient(to right, #080808 0%, rgba(8,8,8,0.92) 20%, rgba(8,8,8,0.65) 40%, rgba(8,8,8,0.15) 65%, transparent 80%)",
+              "linear-gradient(90deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0) 75%)",
             maskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
             WebkitMaskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
           }}
@@ -213,7 +213,7 @@ export function PortfolioHero() {
 
       {/* ===== MAIN CONTENT LAYER ===== */}
       <div
-        className="absolute inset-0 z-10 flex flex-col h-full px-6 md:px-10 lg:px-16 pt-24 pb-12 pointer-events-none"
+        className="absolute inset-0 z-10 flex flex-col h-full px-6 md:px-[5vw] pt-24 pb-12 pointer-events-none"
         style={{
           transform:
             "translate(calc(var(--parallax-x) * 4px), calc(var(--parallax-y) * 4px))",
@@ -221,11 +221,11 @@ export function PortfolioHero() {
         }}
       >
         {/* ===== HERO COPY (LEFT SIDE) ===== */}
-        <div className="flex-1 flex flex-col justify-center max-w-xl lg:max-w-2xl pointer-events-auto">
+        <div className="flex-1 flex flex-col justify-center w-full md:w-[40vw] max-w-[650px] pointer-events-auto">
 
           {/* Eyebrow */}
           <div
-            className="animate-fadeInUp mb-6"
+            className="animate-fadeInUp mb-5"
             style={{ fontFamily: "var(--font-inter), sans-serif" }}
           >
             <span
@@ -247,7 +247,7 @@ export function PortfolioHero() {
             className="animate-fadeInUp delay-100 mb-1"
             style={{
               fontFamily: "var(--font-inter), sans-serif",
-              fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
+              fontSize: "clamp(0.9rem, 1.2vw, 1.1rem)",
               fontWeight: 700,
               color: "rgba(240, 235, 224, 0.65)",
               letterSpacing: "-0.01em",
@@ -261,12 +261,12 @@ export function PortfolioHero() {
             className="animate-fadeInUp delay-200"
             style={{
               fontFamily: "var(--font-inter), sans-serif",
-              fontSize: "clamp(4.5rem, 12vw, 11rem)",
-              lineHeight: 0.88,
-              letterSpacing: "-0.04em",
-              fontWeight: 900,
+              fontSize: "clamp(3.25rem, 8vw, 7.2rem)",
+              lineHeight: 0.9,
+              letterSpacing: "-0.055em",
+              fontWeight: 800,
               color: "#f0ebe0",
-              marginBottom: "0.75rem",
+              marginBottom: "1rem",
               textShadow: "0 20px 60px rgba(0,0,0,0.5)",
             }}
           >
@@ -275,10 +275,10 @@ export function PortfolioHero() {
 
           {/* Role */}
           <div
-            className="animate-fadeInUp delay-300 mb-2"
+            className="animate-fadeInUp delay-300 mb-3"
             style={{
               fontFamily: "var(--font-playfair), Georgia, serif",
-              fontSize: "clamp(1.125rem, 2.8vw, 2rem)",
+              fontSize: "clamp(1rem, 1.5vw, 1.35rem)",
               fontStyle: "italic",
               fontWeight: 700,
               color: "#c5562a",
@@ -290,11 +290,11 @@ export function PortfolioHero() {
 
           {/* Sub-roles */}
           <div
-            className="animate-fadeInUp delay-400 mb-8"
+            className="animate-fadeInUp delay-400 mb-6"
             style={{
               fontFamily: "var(--font-inter), sans-serif",
-              fontSize: "0.65rem",
-              letterSpacing: "0.2em",
+              fontSize: "clamp(0.56rem, 0.65vw, 0.65rem)",
+              letterSpacing: "0.16em",
               textTransform: "uppercase",
               fontWeight: 500,
               color: "rgba(240, 235, 224, 0.35)",
@@ -305,7 +305,7 @@ export function PortfolioHero() {
 
           {/* Description */}
           <div
-            className="animate-fadeInUp delay-500 mb-10 flex gap-4 max-w-[420px]"
+            className="animate-fadeInUp delay-500 mb-8 flex gap-4 max-w-[440px]"
           >
             <div className="w-px min-h-full bg-burnt-sienna/50 flex-shrink-0 mt-1" />
             <p
@@ -323,7 +323,7 @@ export function PortfolioHero() {
           </div>
 
           {/* CTAs */}
-          <div className="animate-fadeInUp delay-600 flex flex-col sm:flex-row gap-3 mb-10">
+          <div className="animate-fadeInUp delay-600 flex flex-col sm:flex-row gap-3 mb-8">
             <a
               href="#contact"
               className="btn-primary"
@@ -348,7 +348,7 @@ export function PortfolioHero() {
           </div>
 
           {/* Social Links */}
-          <div className="animate-fadeInUp delay-700 flex items-center gap-5">
+          <div className="animate-fadeInUp delay-700 hidden sm:flex items-center gap-5">
             <a
               href="https://www.linkedin.com/in/koushik-vulli-45bba3355/"
               target="_blank"

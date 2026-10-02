@@ -10,21 +10,23 @@ import { LeadershipSection } from "@/components/leadership";
 import { AchievementsSection } from "@/components/achievements";
 import { DesignCapabilitiesSection } from "@/components/design-capabilities";
 import { ContactSection } from "@/components/contact";
+import { MarqueeBanner } from "@/components/marquee-banner";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col bg-premium-black">
+    <main className="flex min-h-screen flex-col bg-[#080808]">
       <PortfolioHero />
+      <MarqueeBanner />
       <AboutSection />
       <ServicesSection />
       <ProjectsSection />
       <ExperienceSection />
       <ResearchSection />
       <SkillsSection />
+      <DesignCapabilitiesSection />
       <EducationSection />
       <LeadershipSection />
       <AchievementsSection />
-      <DesignCapabilitiesSection />
       <ContactSection />
     </main>
   );
