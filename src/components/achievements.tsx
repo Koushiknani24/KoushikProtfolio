@@ -1,78 +1,269 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { Trophy, Medal, Award } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+
+const achievements = [
+  {
+    category: "Hackathons",
+    icon: "⬡",
+    items: [
+      { title: "Smart India Hackathon", sub: "National Level Participation" },
+      { title: "BITS Pilani Hackathon", sub: "Hyderabad" },
+    ],
+    accent: "#c5562a",
+  },
+  {
+    category: "Kabaddi",
+    icon: "◉",
+    items: [
+      { title: "Lepanga 2.0", sub: "Tournament" },
+      { title: "Lepanga 3.0", sub: "Tournament" },
+      { title: "Chedugudu", sub: "Tournament" },
+    ],
+    accent: "#800020",
+    image: "/images/achievements/KabbadiMain.jpeg",
+  },
+  {
+    category: "Certifications",
+    icon: "✦",
+    items: [
+      { title: "Network Basics", sub: "Cisco Networking Academy" },
+    ],
+    accent: "#4a0010",
+  },
+];
+
+const beyondCode = [
+  "Kabaddi",
+  "Leadership",
+  "Building Products",
+  "AI Exploration",
+  "Experimentation",
+  "Learning",
+  "Photography",
+  "Fitness",
+];
 
 export function AchievementsSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="relative w-full py-24 bg-premium-black border-t border-white/5">
-      <div className="container mx-auto px-6 md:px-12">
-        <h2 className="text-sm font-bold tracking-widest text-burnt-sienna uppercase mb-16 text-center">
-          Achievements & Beyond Code
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
-          
-          {/* Hackathons */}
-          <div className="flex flex-col items-center text-center group">
-            <div className="w-20 h-20 bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-burnt-sienna/20 group-hover:border-burnt-sienna/50 transition-all duration-300 shadow-[0_0_30px_rgba(233,116,81,0)] group-hover:shadow-[0_0_30px_rgba(233,116,81,0.2)]">
-              <Trophy className="w-8 h-8 text-bone-white group-hover:text-burnt-sienna transition-colors" />
-            </div>
-            <h3 className="text-2xl font-bold text-bone-white mb-6">Hackathons</h3>
-            <ul className="flex flex-col gap-4 text-bone-white/70">
-              <li className="bg-white/5 px-6 py-3 rounded-lg border border-white/5">Smart India Hackathon</li>
-              <li className="bg-white/5 px-6 py-3 rounded-lg border border-white/5">BITS Pilani Hackathon, Hyderabad</li>
-            </ul>
-          </div>
+    <section
+      id="achievements"
+      ref={sectionRef}
+      className="relative w-full bg-[#080808] py-28 md:py-36 overflow-hidden"
+      style={{ borderTop: "1px solid rgba(240, 235, 224, 0.05)" }}
+    >
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
 
-          {/* Sports */}
-          <div className="flex flex-col items-center text-center group">
-            <div className="w-20 h-20 bg-zinc-900 border border-white/10 rounded-full overflow-hidden mb-6 group-hover:border-bone-white/50 transition-all duration-300 shadow-[0_0_30px_rgba(249,246,240,0)] group-hover:shadow-[0_0_30px_rgba(249,246,240,0.1)] relative">
-              <img 
-                src="/images/achievements/KabbadiMain.jpeg" 
-                alt="Kabaddi" 
-                className="absolute inset-0 w-full h-full object-cover"
-                onError={(e) => (e.target as HTMLElement).style.display = 'none'}
-              />
-              <Medal className="w-8 h-8 text-bone-white group-hover:text-bone-white transition-colors relative z-10 drop-shadow-md hidden" />
-            </div>
-            <h3 className="text-2xl font-bold text-bone-white mb-2">Sports</h3>
-            <h4 className="text-burnt-sienna mb-6 font-semibold uppercase tracking-wider text-sm">Kabaddi Champion</h4>
-            <ul className="flex flex-col gap-4 text-bone-white/70">
-              <li className="bg-white/5 px-6 py-3 rounded-lg border border-white/5">Lepanga 2.0</li>
-              <li className="bg-white/5 px-6 py-3 rounded-lg border border-white/5">Lepanga 3.0</li>
-              <li className="bg-white/5 px-6 py-3 rounded-lg border border-white/5">Chedugudu</li>
-            </ul>
-          </div>
-          
-          {/* Certification */}
-          <div className="flex flex-col items-center text-center group">
-            <div className="w-20 h-20 bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-burgundy/40 group-hover:border-burgundy/80 transition-all duration-300 shadow-[0_0_30px_rgba(128,0,32,0)] group-hover:shadow-[0_0_30px_rgba(128,0,32,0.3)]">
-              <Award className="w-8 h-8 text-bone-white group-hover:text-bone-white transition-colors" />
-            </div>
-            <h3 className="text-2xl font-bold text-bone-white mb-6">Certification</h3>
-            <div className="bg-white/5 px-6 py-4 rounded-lg border border-white/5 w-full">
-              <h4 className="font-semibold text-bone-white mb-1">Network Basics</h4>
-              <p className="text-bone-white/60 text-sm">Cisco Networking Academy</p>
-            </div>
-          </div>
-
-        </div>
-        
-        {/* Beyond Code (Personality) */}
-        <div className="mt-32 max-w-4xl mx-auto flex flex-col items-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-bone-white mb-12 tracking-tighter">
-            Beyond Code
+        {/* Header */}
+        <div className="mb-16 md:mb-20">
+          <div className="section-label">Achievements</div>
+          <h2
+            className="text-heading"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              color: "#f0ebe0",
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? "translateY(0)" : "translateY(24px)",
+              transition: "opacity 0.8s ease, transform 0.8s ease",
+            }}
+          >
+            Beyond{" "}
+            <span
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontStyle: "italic",
+                color: "#c5562a",
+              }}
+            >
+              Code
+            </span>
           </h2>
-          
-          <div className="flex flex-wrap justify-center gap-4">
-            {["Kabaddi", "Leadership", "Building Products", "Curiosity", "Experimentation", "AI Exploration"].map((tag) => (
-              <span key={tag} className="px-6 py-3 rounded-full bg-zinc-900 border border-white/10 text-bone-white/80 hover:bg-burnt-sienna hover:border-burnt-sienna hover:text-white transition-all cursor-default">
+        </div>
+
+        {/* Achievement cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-20">
+          {achievements.map((ach, i) => (
+            <div
+              key={ach.category}
+              className="premium-card overflow-hidden relative"
+              style={{
+                opacity: isVisible ? 1 : 0,
+                transform: isVisible ? "translateY(0)" : "translateY(32px)",
+                transition: `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`,
+              }}
+            >
+              {/* Image (Kabaddi only) */}
+              {ach.image && (
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={ach.image}
+                    alt={ach.category}
+                    className="w-full h-full object-cover"
+                    style={{ filter: "brightness(0.5) saturate(0.6)" }}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).parentElement!.style.display = "none";
+                    }}
+                  />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: "linear-gradient(to bottom, transparent 40%, rgba(18,18,18,0.95) 100%)",
+                    }}
+                  />
+                </div>
+              )}
+
+              <div className="p-6">
+                {/* Category header */}
+                <div className="flex items-center gap-3 mb-5">
+                  <div
+                    className="w-9 h-9 rounded-full flex items-center justify-center"
+                    style={{
+                      background: `${ach.accent}12`,
+                      border: `1px solid ${ach.accent}25`,
+                    }}
+                  >
+                    <span style={{ color: ach.accent, fontSize: "0.875rem" }}>{ach.icon}</span>
+                  </div>
+                  <h3
+                    style={{
+                      fontFamily: "var(--font-inter), sans-serif",
+                      fontSize: "1rem",
+                      fontWeight: 700,
+                      color: "#f0ebe0",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {ach.category}
+                  </h3>
+                </div>
+
+                {/* Items */}
+                <div className="flex flex-col gap-2">
+                  {ach.items.map((item) => (
+                    <div
+                      key={item.title}
+                      className="flex items-start gap-3 p-3 rounded-lg"
+                      style={{
+                        background: "rgba(240,235,224,0.02)",
+                        border: "1px solid rgba(240,235,224,0.04)",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color: ach.accent,
+                          fontSize: "0.6rem",
+                          marginTop: "0.2rem",
+                          flexShrink: 0,
+                        }}
+                      >
+                        ▹
+                      </span>
+                      <div>
+                        <p
+                          style={{
+                            fontFamily: "var(--font-inter), sans-serif",
+                            fontSize: "0.875rem",
+                            fontWeight: 600,
+                            color: "rgba(240,235,224,0.8)",
+                            lineHeight: 1.3,
+                          }}
+                        >
+                          {item.title}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: "'JetBrains Mono', monospace",
+                            fontSize: "0.55rem",
+                            color: "rgba(240,235,224,0.25)",
+                            letterSpacing: "0.1em",
+                            marginTop: "0.125rem",
+                          }}
+                        >
+                          {item.sub}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Beyond Code — tag cloud */}
+        <div
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(24px)",
+            transition: "opacity 0.8s ease 0.4s, transform 0.8s ease 0.4s",
+          }}
+        >
+          <div className="mb-6">
+            <span
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontSize: "0.6rem",
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "rgba(240,235,224,0.25)",
+              }}
+            >
+              What drives me beyond the screen
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {beyondCode.map((tag, i) => (
+              <span
+                key={tag}
+                style={{
+                  padding: "0.5rem 1.25rem",
+                  borderRadius: "100px",
+                  border: "1px solid rgba(240,235,224,0.07)",
+                  background: "rgba(240,235,224,0.02)",
+                  fontFamily: "var(--font-inter), sans-serif",
+                  fontSize: "0.875rem",
+                  fontWeight: 500,
+                  color: "rgba(240,235,224,0.45)",
+                  cursor: "default",
+                  transition: "all 0.3s ease",
+                  transitionDelay: `${i * 0.04}s`,
+                  animationDelay: `${i * 0.05}s`,
+                }}
+                onMouseEnter={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.borderColor = "rgba(197,86,42,0.3)";
+                  el.style.background = "rgba(197,86,42,0.05)";
+                  el.style.color = "#c5562a";
+                }}
+                onMouseLeave={(e) => {
+                  const el = e.currentTarget as HTMLElement;
+                  el.style.borderColor = "rgba(240,235,224,0.07)";
+                  el.style.background = "rgba(240,235,224,0.02)";
+                  el.style.color = "rgba(240,235,224,0.45)";
+                }}
+              >
                 {tag}
               </span>
             ))}
           </div>
         </div>
-
       </div>
     </section>
   );

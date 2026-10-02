@@ -2,232 +2,507 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { MoveRight, Mail } from "lucide-react";
-import { FaLinkedin, FaGithub, FaInstagram } from "react-icons/fa";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { ArrowUpRight, ArrowDown } from "lucide-react";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
 
 export function PortfolioHero() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isHovering, setIsHovering] = useState(false);
+  const containerRef = useRef<HTMLElement>(null);
+  const imageWrapRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const maskSizeRef = useRef(0);
+  const targetMaskRef = useRef(0);
+  const mouseXRef = useRef(50);
+  const mouseYRef = useRef(50);
+  const rafRef = useRef<number>(0);
 
+  // Check mobile on mount
   useEffect(() => {
-    const handlePointerMove = (e: PointerEvent) => {
-      setHasInteracted(prev => prev ? true : true);
-      if (!containerRef.current) return;
-      
-      const { left, top, width, height } = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - left) / width) * 100;
-      const y = ((e.clientY - top) / height) * 100;
-      
-      // Update custom cursor if it exists
-      const cursor = document.querySelector(".custom-cursor") as HTMLElement;
-      if (cursor) {
-        cursor.style.left = `${e.clientX}px`;
-        cursor.style.top = `${e.clientY}px`;
-        if (isHovering) {
-          cursor.classList.add("hovering");
-        } else {
-          cursor.classList.remove("hovering");
-        }
+    const check = () => setIsMobile(window.innerWidth < 768 || window.matchMedia("(hover: none)").matches);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const getMaskSize = useCallback(() => {
+    if (isMobile) return Math.min(window.innerWidth * 0.58, 240);
+    return Math.min(window.innerWidth * 0.24, 380);
+  }, [isMobile]);
+
+  // Smooth animation loop
+  useEffect(() => {
+    const animate = () => {
+      const container = imageWrapRef.current;
+      if (!container) {
+        rafRef.current = requestAnimationFrame(animate);
+        return;
       }
 
-      // Update CSS variables for subtle parallax effect (values from -1 to 1)
-      requestAnimationFrame(() => {
-        if (containerRef.current) {
-          const moveX = ((e.clientX / window.innerWidth) - 0.5) * 2; // -1 to 1
-          const moveY = ((e.clientY / window.innerHeight) - 0.5) * 2; // -1 to 1
-          containerRef.current.style.setProperty("--parallax-x", `${moveX}`);
-          containerRef.current.style.setProperty("--parallax-y", `${moveY}`);
-          containerRef.current.style.setProperty("--mouse-x", `${x}%`);
-          containerRef.current.style.setProperty("--mouse-y", `${y}%`);
-        }
-      });
+      // Lerp mask size
+      maskSizeRef.current += (targetMaskRef.current - maskSizeRef.current) * 0.1;
+
+      container.style.setProperty("--mask-size", `${maskSizeRef.current}px`);
+      container.style.setProperty("--mouse-x", `${mouseXRef.current}%`);
+      container.style.setProperty("--mouse-y", `${mouseYRef.current}%`);
+
+      rafRef.current = requestAnimationFrame(animate);
     };
 
-    window.addEventListener("pointermove", handlePointerMove);
-    
-    // Create cursor element if it doesn't exist
-    if (!document.querySelector(".custom-cursor")) {
-      const cursor = document.createElement("div");
-      cursor.className = "custom-cursor hidden md:block";
-      document.body.appendChild(cursor);
-    }
-    
+    rafRef.current = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  // Pointer move handler
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!hasInteracted) setHasInteracted(true);
+
+      const rect = container.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      mouseXRef.current = x;
+      mouseYRef.current = y;
+      targetMaskRef.current = getMaskSize();
+
+      // Subtle parallax on content
+      const px = (e.clientX / window.innerWidth - 0.5) * 2;
+      const py = (e.clientY / window.innerHeight - 0.5) * 2;
+      container.style.setProperty("--parallax-x", `${px}`);
+      container.style.setProperty("--parallax-y", `${py}`);
+    };
+
+    const handlePointerLeave = () => {
+      targetMaskRef.current = 0;
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    container.addEventListener("pointerleave", handlePointerLeave, { passive: true });
+
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
-      const cursor = document.querySelector(".custom-cursor");
-      if (cursor) {
-        cursor.remove();
-      }
+      container.removeEventListener("pointerleave", handlePointerLeave);
     };
-  }, [isHovering]);
+  }, [hasInteracted, getMaskSize]);
 
   return (
-    <section 
+    <section
       ref={containerRef}
-      className="relative w-full h-[100dvh] min-h-[600px] overflow-hidden bg-premium-black flex items-center"
+      id="hero"
+      className="relative w-full overflow-hidden bg-[#080808]"
       style={{
-        '--parallax-x': '0',
-        '--parallax-y': '0',
-        '--mouse-x': '50%',
-        '--mouse-y': '50%',
-        '--mask-size': '250px'
+        height: "100dvh",
+        minHeight: "600px",
+        "--parallax-x": "0",
+        "--parallax-y": "0",
       } as React.CSSProperties}
+      aria-label="Hero section"
     >
-      {/* Full Screen Cinematic Image with Subtle Parallax */}
-      <div 
-        className="absolute inset-[-2%] w-[104%] h-[104%] z-0 pointer-events-none transition-transform duration-700 ease-out image-reveal-container"
+      {/* ===== FULL-SCREEN IMAGE SYSTEM ===== */}
+      <div
+        ref={imageWrapRef}
+        className="absolute inset-[-2%] w-[104%] h-[104%] z-0 image-reveal-container"
         style={{
-          transform: 'translate(calc(var(--parallax-x) * -10px), calc(var(--parallax-y) * -10px)) scale(1.02)'
-        }}
+          transform:
+            "translate(calc(var(--parallax-x) * -8px), calc(var(--parallax-y) * -8px)) scale(1.02)",
+          transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+          "--mouse-x": "50%",
+          "--mouse-y": "50%",
+          "--mask-size": "0px",
+        } as React.CSSProperties}
       >
-        <img 
-          src="/images/hero/Base_image.jpeg" 
-          alt="Professional Portrait" 
-          className="image-base absolute inset-0 w-full h-full object-cover object-center opacity-90"
-          onError={(e) => (e.target as HTMLElement).style.display = 'none'}
+        {/* Base Image */}
+        <img
+          src="/images/hero/Base_image.jpeg"
+          alt="Vulli Koushik — Professional Portrait"
+          className="image-base"
+          priority-fetch="high"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src =
+              "https://placehold.co/1920x1080/080808/1a1a1a?text=.";
+          }}
         />
-        
-        {/* Subtle dark/black cinematic gradient over the LEFT 50–60% for Base Image */}
-        <div className="absolute inset-0 bg-gradient-to-r from-premium-black/90 via-premium-black/50 to-transparent w-[60%]" />
-        {/* Softer bottom gradient for the navigation/scroll area */}
-        <div className="absolute inset-0 bg-gradient-to-t from-premium-black/70 via-transparent to-transparent h-1/3 mt-auto" />
 
-        <img 
-          src="/images/hero/Reveal_image.jpeg" 
-          alt="Motorcycle Rider Identity" 
-          className="image-reveal absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 opacity-100"
-          onError={(e) => (e.target as HTMLElement).style.display = 'none'}
+        {/* Dark cinematic gradient — covers left 55% of image for text readability */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, #080808 0%, rgba(8,8,8,0.92) 20%, rgba(8,8,8,0.65) 40%, rgba(8,8,8,0.15) 65%, transparent 80%)",
+          }}
+        />
+        {/* Bottom fade for scroll indicator */}
+        <div
+          className="absolute bottom-0 left-0 w-full h-40 pointer-events-none"
+          style={{
+            background: "linear-gradient(to top, #080808 0%, transparent 100%)",
+          }}
+        />
+        {/* Top fade */}
+        <div
+          className="absolute top-0 left-0 w-full h-24 pointer-events-none"
+          style={{
+            background: "linear-gradient(to bottom, rgba(8,8,8,0.6) 0%, transparent 100%)",
+          }}
+        />
+
+        {/* Reveal Image (Futuristic/AI version) */}
+        <img
+          src="/images/hero/Reveal_image.jpeg"
+          alt="Vulli Koushik — AI Transformation"
+          className="image-reveal"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+
+        {/* Reveal gradient overlay (same pattern, ensures readability) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background:
+              "linear-gradient(to right, #080808 0%, rgba(8,8,8,0.92) 20%, rgba(8,8,8,0.65) 40%, rgba(8,8,8,0.15) 65%, transparent 80%)",
+            maskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
+            WebkitMaskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
+          }}
         />
       </div>
 
-      {/* Subtle Hint */}
-      <div 
-        className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-1000 z-20 ${hasInteracted ? 'opacity-0' : 'opacity-100'}`}
+      {/* ===== REVEAL HINT (before first interaction) ===== */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 transition-all duration-700"
+        style={{ opacity: hasInteracted ? 0 : 1 }}
+        aria-hidden="true"
       >
-        <div className="flex flex-col items-center gap-2 text-bone-white/60">
-          <div className="w-12 h-12 rounded-full border border-bone-white/30 flex items-center justify-center animate-pulse">
-            <div className="w-1.5 h-1.5 bg-bone-white rounded-full" />
+        <div
+          className="flex flex-col items-center gap-3"
+          style={{
+            marginLeft: "auto",
+            marginRight: "8vw",
+            marginBottom: "-15vh",
+          }}
+        >
+          <div
+            className="w-12 h-12 rounded-full border border-bone-white/20 flex items-center justify-center"
+            style={{ animation: "pulse-glow 2.5s ease-in-out infinite" }}
+          >
+            <div
+              className="w-1.5 h-1.5 rounded-full bg-burnt-sienna"
+              style={{ animation: "float 1.8s ease-in-out infinite" }}
+            />
           </div>
-          <span className="text-[10px] tracking-[0.2em] uppercase font-semibold">Move to Reveal</span>
+          <span
+            className="text-bone-white/40"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "0.6rem",
+              letterSpacing: "0.22em",
+              textTransform: "uppercase",
+              fontWeight: 500,
+            }}
+          >
+            {isMobile ? "Touch to Reveal" : "Move to Reveal"}
+          </span>
         </div>
       </div>
 
-      {/* Content Layer with Subtle Opposite Parallax */}
-      <div 
-        className="container mx-auto px-6 md:px-[6vw] relative z-10 flex flex-col justify-center h-full pt-20 transition-transform duration-700 ease-out pointer-events-none"
+      {/* ===== MAIN CONTENT LAYER ===== */}
+      <div
+        className="absolute inset-0 z-10 flex flex-col h-full px-6 md:px-10 lg:px-16 pt-24 pb-12 pointer-events-none"
         style={{
-          transform: 'translate(calc(var(--parallax-x) * 5px), calc(var(--parallax-y) * 5px))'
+          transform:
+            "translate(calc(var(--parallax-x) * 4px), calc(var(--parallax-y) * 4px))",
+          transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
         }}
       >
-        
-        {/* Typography Left Side */}
-        <div className="w-full lg:w-1/2 flex flex-col justify-center mt-auto md:mt-0 pointer-events-auto">
-          
-          <p className="text-bone-white/50 text-[10px] md:text-xs tracking-[0.3em] font-semibold uppercase mb-8">
-            IDEAS → CODE → DESIGN → IMPACT
-          </p>
-          
-          <h2 className="text-bone-white text-3xl md:text-4xl font-bold mb-2 tracking-tight">
-            I'm
-          </h2>
-          
-          <h1 className="text-6xl md:text-8xl lg:text-[10rem] font-black leading-none mb-4 tracking-tighter" style={{ textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
-            <span className="text-bone-white">KOU</span><span className="text-burnt-sienna">SHIK</span>
+        {/* ===== HERO COPY (LEFT SIDE) ===== */}
+        <div className="flex-1 flex flex-col justify-center max-w-xl lg:max-w-2xl pointer-events-auto">
+
+          {/* Eyebrow */}
+          <div
+            className="animate-fadeInUp mb-6"
+            style={{ fontFamily: "var(--font-inter), sans-serif" }}
+          >
+            <span
+              className="text-bone-white/35"
+              style={{
+                fontSize: "0.65rem",
+                letterSpacing: "0.28em",
+                textTransform: "uppercase",
+                fontWeight: 500,
+                fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+              }}
+            >
+              IDEAS → CODE → DESIGN → IMPACT
+            </span>
+          </div>
+
+          {/* I'm text */}
+          <div
+            className="animate-fadeInUp delay-100 mb-1"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "clamp(1.25rem, 2.5vw, 1.75rem)",
+              fontWeight: 700,
+              color: "rgba(240, 235, 224, 0.65)",
+              letterSpacing: "-0.01em",
+            }}
+          >
+            I&apos;m
+          </div>
+
+          {/* KOUSHIK — Hero Name */}
+          <h1
+            className="animate-fadeInUp delay-200"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "clamp(4.5rem, 12vw, 11rem)",
+              lineHeight: 0.88,
+              letterSpacing: "-0.04em",
+              fontWeight: 900,
+              color: "#f0ebe0",
+              marginBottom: "0.75rem",
+              textShadow: "0 20px 60px rgba(0,0,0,0.5)",
+            }}
+          >
+            KOUSHIK
           </h1>
-          
-          <h3 className="text-2xl md:text-4xl font-bold text-bone-white mb-6">
+
+          {/* Role */}
+          <div
+            className="animate-fadeInUp delay-300 mb-2"
+            style={{
+              fontFamily: "var(--font-playfair), Georgia, serif",
+              fontSize: "clamp(1.125rem, 2.8vw, 2rem)",
+              fontStyle: "italic",
+              fontWeight: 700,
+              color: "#c5562a",
+              letterSpacing: "0.01em",
+            }}
+          >
             AI + Software Developer
-          </h3>
-          
-          <p className="text-bone-white/60 font-semibold mb-8 text-[11px] md:text-sm tracking-[0.15em] uppercase">
-            FULL-STACK DEVELOPER • PRODUCT BUILDER • DESIGNER
-          </p>
-          
-          <div className="flex gap-4 mb-10 pl-2 border-l-2 border-burnt-sienna/80 max-w-md">
-            <p className="text-bone-white/80 text-sm md:text-base leading-relaxed pl-2">
-              Building useful software, digital experiences, and AI-powered solutions — from ideas and interfaces to working products.
+          </div>
+
+          {/* Sub-roles */}
+          <div
+            className="animate-fadeInUp delay-400 mb-8"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "0.65rem",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              fontWeight: 500,
+              color: "rgba(240, 235, 224, 0.35)",
+            }}
+          >
+            Full-Stack Developer&nbsp; · &nbsp;Product Builder&nbsp; · &nbsp;Designer
+          </div>
+
+          {/* Description */}
+          <div
+            className="animate-fadeInUp delay-500 mb-10 flex gap-4 max-w-[420px]"
+          >
+            <div className="w-px min-h-full bg-burnt-sienna/50 flex-shrink-0 mt-1" />
+            <p
+              style={{
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "clamp(0.875rem, 1.5vw, 1rem)",
+                lineHeight: 1.7,
+                color: "rgba(240, 235, 224, 0.65)",
+                fontWeight: 400,
+              }}
+            >
+              Building useful software, digital experiences, and AI-powered solutions —
+              from ideas and interfaces to working products.
             </p>
           </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <a 
+
+          {/* CTAs */}
+          <div className="animate-fadeInUp delay-600 flex flex-col sm:flex-row gap-3 mb-10">
+            <a
               href="#contact"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              className="group flex items-center justify-center gap-3 bg-gradient-to-r from-burnt-sienna to-orange-500 text-bone-white px-8 py-3.5 rounded-full font-semibold hover:opacity-90 transition-all duration-300 shadow-[0_0_20px_rgba(233,116,81,0.3)] cursor-none"
+              className="btn-primary"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
-              Let's Talk
-              <MoveRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Let&apos;s Talk
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </a>
-            <a 
+            <a
               href="#work"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              className="flex items-center justify-center px-8 py-3.5 rounded-full font-medium text-bone-white border border-bone-white/30 hover:border-bone-white hover:bg-bone-white/5 transition-all duration-300 cursor-none"
+              className="btn-outline"
+              onClick={(e) => {
+                e.preventDefault();
+                document.querySelector("#work")?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               View My Work
             </a>
           </div>
 
-          {/* Social Icons Row */}
-          <div className="flex items-center gap-6 mb-auto md:mb-0 pb-8">
-            <a href="#" className="text-bone-white/60 hover:text-bone-white transition-colors">
-              <FaLinkedin className="w-5 h-5" />
+          {/* Social Links */}
+          <div className="animate-fadeInUp delay-700 flex items-center gap-5">
+            <a
+              href="https://www.linkedin.com/in/koushik-vulli-45bba3355/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-bone-white/30 hover:text-bone-white/80 transition-colors duration-300"
+              aria-label="LinkedIn"
+            >
+              <FaLinkedin className="w-4 h-4" />
             </a>
-            <a href="#" className="text-bone-white/60 hover:text-bone-white transition-colors">
-              <FaGithub className="w-5 h-5" />
+            <a
+              href="https://github.com/Koushiknani24"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-bone-white/30 hover:text-bone-white/80 transition-colors duration-300"
+              aria-label="GitHub"
+            >
+              <FaGithub className="w-4 h-4" />
             </a>
-            <a href="#" className="text-bone-white/60 hover:text-bone-white transition-colors">
-              <Mail className="w-5 h-5" />
+            <a
+              href="mailto:vullikoushik24@gmail.com"
+              className="text-bone-white/30 hover:text-bone-white/80 transition-colors duration-300"
+              aria-label="Email"
+            >
+              <MdEmail className="w-4.5 h-4.5" />
             </a>
-            <a href="#" className="text-bone-white/60 hover:text-bone-white transition-colors">
-              <FaInstagram className="w-5 h-5" />
-            </a>
-          </div>
-          
-          {/* Scroll Indicator */}
-          <div className="hidden lg:flex flex-col items-center absolute bottom-10 left-12 opacity-60">
-            <div className="w-[1px] h-8 bg-bone-white/40 mb-2" />
-            <span className="text-[9px] tracking-[0.2em] text-bone-white uppercase">SCROLL</span>
-            <div className="w-3 h-3 border-b border-r border-bone-white/60 rotate-45 mt-2" />
+
+            {/* Divider */}
+            <div className="w-px h-4 bg-bone-white/10" />
+
+            <span
+              style={{
+                fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                fontSize: "0.6rem",
+                letterSpacing: "0.15em",
+                color: "rgba(240,235,224,0.25)",
+                textTransform: "uppercase",
+              }}
+            >
+              Visakhapatnam, India
+            </span>
           </div>
         </div>
 
-        {/* Right Side Elements */}
-        <div className="hidden lg:flex flex-col justify-between absolute right-12 top-0 h-full py-32 pointer-events-none">
-          
-          {/* Top Right Words */}
-          <div className="flex flex-col gap-6 text-bone-white/50 tracking-[0.3em] text-[10px] font-bold uppercase items-end">
+        {/* ===== BOTTOM ROW ===== */}
+        <div className="flex items-end justify-between pointer-events-auto">
+
+          {/* Scroll indicator */}
+          <div className="flex flex-col items-start gap-2 pb-1">
+            <div
+              className="w-px h-12 bg-gradient-to-b from-transparent to-bone-white/30"
+              style={{ animation: "float 2s ease-in-out infinite" }}
+            />
+            <span
+              style={{
+                fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                fontSize: "0.55rem",
+                letterSpacing: "0.25em",
+                textTransform: "uppercase",
+                color: "rgba(240,235,224,0.25)",
+                writingMode: "horizontal-tb",
+              }}
+            >
+              Scroll
+            </span>
+            <ArrowDown className="w-3 h-3 text-bone-white/20" />
+          </div>
+
+          {/* Right side — Editorial text */}
+          <div
+            className="hidden lg:flex flex-col items-end gap-3 text-right"
+            style={{
+              fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+              fontSize: "0.6rem",
+              letterSpacing: "0.2em",
+              textTransform: "uppercase",
+              color: "rgba(240,235,224,0.2)",
+              fontWeight: 500,
+            }}
+          >
             <span>BUILD</span>
             <span>LEARN</span>
             <span>RESEARCH</span>
             <span>GROW</span>
-            <div className="w-8 h-[1px] bg-bone-white/30 mt-2" />
+            <div className="w-8 h-px bg-bone-white/15 mt-1 ml-auto" />
+            <span className="text-bone-white/10">ON TO BIGGER THINGS</span>
           </div>
-
-          {/* Bottom Right Graphic & Text */}
-          <div className="flex items-center gap-6 relative">
-            {/* Decorative orbit element */}
-            <div className="absolute right-32 top-1/2 -translate-y-1/2 w-48 h-48 border border-white/10 rounded-full flex items-center justify-start">
-              <div className="w-2 h-2 bg-burnt-sienna rounded-full shadow-[0_0_10px_#e97451] ml-[-4px]" />
-            </div>
-            
-            <div className="text-right z-10">
-              <p className="text-bone-white text-5xl mb-2 opacity-95 tracking-wide" style={{ fontFamily: "'Cedarville Cursive', 'Dancing Script', 'Brush Script MT', cursive" }}>On to<br/><span className="text-6xl">Bigger Things</span></p>
-              <div className="w-12 h-[1px] bg-burnt-sienna/60 ml-auto mb-3" />
-              <p className="text-bone-white/60 text-[9px] tracking-[0.25em] font-semibold leading-relaxed uppercase">
-                WHERE IDEAS<br/>MEET IMPACT
-              </p>
-            </div>
-          </div>
-
         </div>
       </div>
-      
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-premium-black to-transparent pointer-events-none z-20" />
+
+      {/* ===== RIGHT SIDE — Subtle orbit decoration ===== */}
+      <div
+        className="absolute right-12 top-1/2 -translate-y-1/2 hidden xl:block pointer-events-none z-5"
+        aria-hidden="true"
+        style={{
+          transform: "translate(calc(var(--parallax-x) * -12px), calc(var(--parallax-y) * -12px)) translateY(-50%)",
+          transition: "transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        }}
+      >
+        {/* Thin orbital rings */}
+        <div
+          className="absolute"
+          style={{
+            width: "300px",
+            height: "300px",
+            borderRadius: "50%",
+            border: "1px solid rgba(240,235,224,0.04)",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            animation: "spin-slow 30s linear infinite",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: "-4px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              background: "#c5562a",
+              boxShadow: "0 0 12px rgba(197,86,42,0.5)",
+            }}
+          />
+        </div>
+        <div
+          style={{
+            width: "180px",
+            height: "180px",
+            borderRadius: "50%",
+            border: "1px solid rgba(240,235,224,0.03)",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            animation: "spin-reverse 20s linear infinite",
+          }}
+        >
+          <div
+            style={{
+              position: "absolute",
+              bottom: "-3px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "6px",
+              height: "6px",
+              borderRadius: "50%",
+              background: "rgba(240,235,224,0.3)",
+              boxShadow: "0 0 8px rgba(240,235,224,0.2)",
+            }}
+          />
+        </div>
+      </div>
     </section>
   );
 }

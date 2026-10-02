@@ -1,98 +1,165 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowUpRight } from "lucide-react";
+
+const navLinks = [
+  { name: "About", href: "#about" },
+  { name: "Work", href: "#work" },
+  { name: "Experience", href: "#experience" },
+  { name: "Research", href: "#research" },
+  { name: "Services", href: "#services" },
+  { name: "Contact", href: "#contact" },
+];
 
 export function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 60);
+      // Hide nav when scrolling down quickly, show when scrolling up
+      if (currentScrollY > lastScrollY + 8 && currentScrollY > 200) {
+        setIsHidden(true);
+      } else if (currentScrollY < lastScrollY - 8) {
+        setIsHidden(false);
+      }
+      setLastScrollY(currentScrollY);
     };
-    
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
-  const navLinks = [
-    { name: "About", href: "#about" },
-    { name: "Work", href: "#work" },
-    { name: "Experience", href: "#experience" },
-    { name: "Research", href: "#research" },
-    { name: "Services", href: "#services" },
-    { name: "Contact", href: "#contact" },
-  ];
+  const handleNavClick = (href: string) => {
+    setIsMobileMenuOpen(false);
+    const el = document.querySelector(href);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
-    <nav className={cn(
-      "fixed top-0 left-0 w-full z-50 transition-all duration-300",
-      isScrolled ? "py-4 bg-premium-black/80 backdrop-blur-md border-b border-white/5" : "py-6 bg-transparent"
-    )}>
-      <div className="container mx-auto px-6 md:px-12 flex items-center justify-between">
-        
-        {/* Left: Logo */}
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-bone-white text-premium-black rounded-lg flex items-center justify-center font-bold text-xl">
-            K
-          </div>
-          <span className="text-bone-white font-bold tracking-wide hidden sm:block">Koushik</span>
-        </div>
+    <>
+      <nav
+        className={cn(
+          "fixed top-0 left-0 w-full z-50 transition-all duration-500",
+          isScrolled
+            ? "py-3 bg-[#080808]/90 backdrop-blur-xl border-b border-white/[0.04]"
+            : "py-5 bg-transparent",
+          isHidden && !isMobileMenuOpen ? "-translate-y-full" : "translate-y-0"
+        )}
+      >
+        <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
 
-        {/* Center: Desktop Links */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href}
-              className="text-sm font-medium text-bone-white/70 hover:text-burnt-sienna transition-colors"
-            >
-              {link.name}
-            </a>
-          ))}
-        </div>
-
-        {/* Right: CTA & Mobile Toggle */}
-        <div className="flex items-center gap-4">
-          <button className="hidden md:block px-6 py-2.5 rounded-full bg-burnt-sienna text-bone-white text-sm font-semibold hover:bg-bone-white hover:text-premium-black transition-colors">
-            Let's Talk
-          </button>
-          
-          {/* Mobile Menu Button */}
-          <button 
-            className="md:hidden flex items-center justify-center w-11 h-11 rounded-full bg-white/5 border border-white/10 text-bone-white"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
+          {/* Left: Logo */}
+          <a
+            href="#"
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="flex items-center gap-2.5 group"
           >
-            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
+            <Image
+              src="/images/profile/Koushik.jpeg"
+              alt="Koushik"
+              width={32}
+              height={32}
+              className="h-8 w-8 rounded-full border border-bone-white/50 object-cover object-top transition-all duration-300 group-hover:border-burnt-sienna"
+            />
+            <span
+              className="text-bone-white/80 font-medium text-sm tracking-wide hidden sm:block transition-colors group-hover:text-bone-white"
+              style={{ fontFamily: "var(--font-inter), sans-serif", letterSpacing: "0.04em" }}
+            >
+              KOUSHIK
+            </span>
+          </a>
 
-      {/* Mobile Menu Dropdown */}
-      <div className={cn(
-        "md:hidden absolute top-full left-0 w-full bg-premium-black/95 backdrop-blur-lg border-b border-white/10 transition-all duration-300 overflow-hidden",
-        isMobileMenuOpen ? "max-h-[400px] py-4" : "max-h-0 py-0"
-      )}>
-        <div className="flex flex-col px-6 gap-4">
-          {navLinks.map((link) => (
-            <a 
-              key={link.name} 
+          {/* Center: Desktop Links */}
+          <div className="hidden md:flex items-center gap-7">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
+                className="relative text-[0.7rem] font-medium text-bone-white/50 hover:text-bone-white/90 tracking-[0.12em] uppercase transition-colors duration-300 group"
+              >
+                {link.name}
+                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-burnt-sienna group-hover:w-full transition-all duration-300" />
+              </a>
+            ))}
+          </div>
+
+          {/* Right: CTA + Mobile Toggle */}
+          <div className="flex items-center gap-3">
+            <a
+              href="#contact"
+              onClick={(e) => { e.preventDefault(); handleNavClick("#contact"); }}
+              className="hidden md:flex items-center gap-2 px-5 py-2 rounded-full border border-burnt-sienna/60 text-burnt-sienna text-[0.7rem] font-semibold tracking-[0.1em] uppercase hover:bg-burnt-sienna hover:text-bone-white transition-all duration-300"
+            >
+              Let&apos;s Talk
+              <ArrowUpRight className="w-3 h-3" />
+            </a>
+
+            {/* Mobile hamburger */}
+            <button
+              className="md:hidden flex items-center justify-center w-9 h-9 rounded-full bg-white/5 border border-white/10 text-bone-white transition-all duration-300 hover:bg-white/10"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+              aria-expanded={isMobileMenuOpen}
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-4 h-4" />
+              ) : (
+                <Menu className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Menu Overlay */}
+      <div
+        className={cn(
+          "fixed inset-0 z-40 bg-[#080808]/98 backdrop-blur-2xl md:hidden flex flex-col transition-all duration-500",
+          isMobileMenuOpen
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div className="flex flex-col items-center justify-center h-full gap-8 px-8">
+          {navLinks.map((link, i) => (
+            <a
+              key={link.name}
               href={link.href}
-              className="text-lg font-medium text-bone-white/80 hover:text-burnt-sienna transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => { e.preventDefault(); handleNavClick(link.href); }}
+              className="text-4xl font-bold text-bone-white/30 hover:text-bone-white transition-all duration-300"
+              style={{
+                transitionDelay: isMobileMenuOpen ? `${i * 60}ms` : "0ms",
+                transform: isMobileMenuOpen ? "translateY(0)" : "translateY(20px)",
+                opacity: isMobileMenuOpen ? 1 : 0,
+                fontFamily: "var(--font-inter), sans-serif",
+                letterSpacing: "-0.02em",
+              }}
             >
               {link.name}
             </a>
           ))}
-          <button className="mt-4 px-6 py-3 rounded-full bg-burnt-sienna text-bone-white font-semibold text-center w-full">
-            Let's Talk
-          </button>
+
+          <a
+            href="#contact"
+            onClick={(e) => { e.preventDefault(); handleNavClick("#contact"); }}
+            className="mt-4 btn-primary"
+            style={{ transitionDelay: isMobileMenuOpen ? `${navLinks.length * 60}ms` : "0ms" }}
+          >
+            Let&apos;s Talk →
+          </a>
         </div>
       </div>
-    </nav>
+    </>
   );
 }

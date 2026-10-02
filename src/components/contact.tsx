@@ -1,59 +1,228 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
 
-import dynamic from "next/dynamic";
-import { Mail, MoveRight } from "lucide-react";
-
-const Contact3DScene = dynamic(() => import("./contact-3d-scene").then(mod => mod.Contact3DScene), {
-  ssr: false,
-  loading: () => <div className="absolute inset-0 bg-transparent z-0" />
-});
+import { useRef, useEffect, useState } from "react";
+import { ArrowUpRight, Mail } from "lucide-react";
+import { FaLinkedin, FaGithub } from "react-icons/fa";
 
 export function ContactSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); }
+      },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const socialLinks = [
+    {
+      label: "LinkedIn",
+      icon: <FaLinkedin className="w-4 h-4" />,
+      href: "https://www.linkedin.com/in/koushik-vulli-45bba3355/",
+    },
+    {
+      label: "GitHub",
+      icon: <FaGithub className="w-4 h-4" />,
+      href: "https://github.com/Koushiknani24",
+    },
+    {
+      label: "Email",
+      icon: <Mail className="w-4 h-4" />,
+      href: "mailto:vullikoushik24@gmail.com",
+    },
+  ];
+
   return (
-    <section id="contact" className="relative w-full min-h-screen bg-premium-black py-32 flex flex-col justify-between overflow-hidden">
-      {/* Immersive 3D Background */}
-      <Contact3DScene />
-      
-      <div className="container mx-auto px-6 md:px-12 relative z-10 flex flex-col items-center justify-center flex-1 text-center mt-20">
-        <h2 className="text-6xl md:text-8xl lg:text-9xl font-bold text-bone-white mb-8 tracking-tighter" style={{ textShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
-          Let's Talk
-        </h2>
-        
-        <p className="text-xl md:text-2xl text-bone-white/80 max-w-2xl mb-16 leading-relaxed">
-          Have an idea, business requirement, software problem, or product you want to build? Let's turn it into something useful.
-        </p>
-        
-        <button className="group flex items-center gap-4 bg-bone-white text-premium-black px-10 py-5 rounded-full font-bold text-lg hover:bg-burnt-sienna hover:text-bone-white transition-all duration-300 shadow-[0_0_40px_rgba(249,246,240,0.2)] hover:shadow-[0_0_40px_rgba(233,116,81,0.4)]">
-          Let's Talk
-          <MoveRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-        </button>
+    <section
+      id="contact"
+      ref={sectionRef}
+      className="relative w-full bg-[#080808] py-28 md:py-40 overflow-hidden"
+      style={{ borderTop: "1px solid rgba(240, 235, 224, 0.05)" }}
+    >
+      {/* Background atmosphere */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden="true"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 100%, rgba(197,86,42,0.06) 0%, transparent 70%)",
+        }}
+      />
+
+      {/* Orbital decoration */}
+      <div
+        className="absolute right-1/4 top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none"
+        aria-hidden="true"
+        style={{
+          opacity: isVisible ? 0.4 : 0,
+          transition: "opacity 1s ease 0.5s",
+        }}
+      >
+        {[280, 180, 100].map((size, i) => (
+          <div
+            key={size}
+            className="absolute rounded-full"
+            style={{
+              width: `${size}px`,
+              height: `${size}px`,
+              border: "1px solid rgba(197,86,42,0.12)",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              animation: i % 2 === 0 ? "spin-slow 30s linear infinite" : "spin-reverse 20s linear infinite",
+            }}
+          />
+        ))}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: "6px",
+            height: "6px",
+            background: "#c5562a",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) translateY(-140px)",
+            boxShadow: "0 0 12px rgba(197,86,42,0.6)",
+          }}
+        />
       </div>
 
-      {/* Footer / Contact Options */}
-      <div className="container mx-auto px-6 md:px-12 relative z-10 mt-32 border-t border-white/10 pt-12 pb-8 flex flex-col md:flex-row justify-between items-center gap-8">
-        
-        <div className="flex items-center gap-8">
-          <a href="mailto:contact@vullikoushik.com" className="flex items-center gap-2 text-bone-white/70 hover:text-burnt-sienna transition-colors">
-            <Mail className="w-5 h-5" />
-            <span>Email</span>
-          </a>
-          <a href="https://www.linkedin.com/in/koushik-vulli-45bba3355/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-bone-white/70 hover:text-burnt-sienna transition-colors">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            <span>LinkedIn</span>
-          </a>
-          <a href="https://github.com/Koushiknani24" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-bone-white/70 hover:text-burnt-sienna transition-colors">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-            <span>GitHub</span>
-          </a>
-        </div>
-        
-        <div className="text-bone-white/50 text-sm">
-          <p>Business/software inquiry</p>
-        </div>
-        
-        <div className="text-bone-white/30 text-sm">
-          &copy; {new Date().getFullYear()} Vulli Koushik. All rights reserved.
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
+
+        {/* Main CTA */}
+        <div
+          className="max-w-3xl"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? "translateY(0)" : "translateY(32px)",
+            transition: "opacity 0.9s ease, transform 0.9s ease",
+          }}
+        >
+          <div className="section-label">Contact</div>
+
+          {/* Large headline */}
+          <h2
+            className="mb-6"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "clamp(2.5rem, 7vw, 6rem)",
+              fontWeight: 900,
+              color: "#f0ebe0",
+              letterSpacing: "-0.03em",
+              lineHeight: 0.95,
+            }}
+          >
+            Let&apos;s Build
+            <br />
+            <span
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontStyle: "italic",
+                color: "#c5562a",
+                fontWeight: 700,
+              }}
+            >
+              Something Useful.
+            </span>
+          </h2>
+
+          <p
+            className="mb-10"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "clamp(1rem, 1.75vw, 1.25rem)",
+              lineHeight: 1.65,
+              color: "rgba(240,235,224,0.5)",
+              maxWidth: "520px",
+            }}
+          >
+            Have an idea, project, business requirement, or digital product in mind?
+            <br />Let&apos;s talk.
+          </p>
+
+          {/* Primary CTA */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-14">
+            <a
+              href="mailto:vullikoushik24@gmail.com"
+              className="btn-primary text-sm"
+              style={{ fontSize: "0.875rem", padding: "1rem 2.25rem" }}
+            >
+              vullikoushik24@gmail.com
+              <ArrowUpRight className="w-4 h-4" />
+            </a>
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              height: "1px",
+              background: "rgba(240,235,224,0.06)",
+              marginBottom: "2rem",
+            }}
+          />
+
+          {/* Footer row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+
+            {/* Social links */}
+            <div className="flex items-center gap-5">
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.href.startsWith("mailto") ? undefined : "_blank"}
+                  rel={link.href.startsWith("mailto") ? undefined : "noopener noreferrer"}
+                  aria-label={link.label}
+                  className="flex items-center gap-2"
+                  style={{
+                    color: "rgba(240,235,224,0.3)",
+                    textDecoration: "none",
+                    fontSize: "0.75rem",
+                    fontFamily: "var(--font-inter), sans-serif",
+                    transition: "color 0.3s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = "#f0ebe0";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLAnchorElement).style.color = "rgba(240,235,224,0.3)";
+                  }}
+                >
+                  {link.icon}
+                  <span className="hidden sm:block">{link.label}</span>
+                </a>
+              ))}
+
+              <div style={{ width: "1px", height: "16px", background: "rgba(240,235,224,0.1)" }} />
+
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', monospace",
+                  fontSize: "0.6rem",
+                  color: "rgba(240,235,224,0.2)",
+                  letterSpacing: "0.12em",
+                }}
+              >
+                Visakhapatnam, India
+              </span>
+            </div>
+
+            {/* Copyright */}
+            <span
+              style={{
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "0.75rem",
+                color: "rgba(240,235,224,0.15)",
+              }}
+            >
+              © {new Date().getFullYear()} Vulli Koushik
+            </span>
+          </div>
         </div>
       </div>
     </section>

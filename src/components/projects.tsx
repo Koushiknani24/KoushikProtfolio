@@ -1,174 +1,291 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useRef, useState } from "react";
-import { cn } from "@/lib/utils";
+import { useRef, useEffect, useState } from "react";
+import { ArrowUpRight } from "lucide-react";
 
-interface WorkCategory {
-  id: string;
-  number: string;
-  title: string;
-  description: string;
-  items: string[];
-  imagePath: string;
-  featured?: boolean;
-}
-
-const workCategories: WorkCategory[] = [
+const projects = [
   {
-    id: "full-stack",
-    number: "01",
-    title: "Full-Stack Development",
-    description: "Building complete web applications from frontend to backend.",
-    items: ["React / Next.js", "JavaScript / TypeScript", "Python", "APIs", "Databases", "Authentication", "Deployment"],
-    imagePath: "/images/about/DailyRotine2.jpeg", // Coding/laptop photo
-    featured: true,
+    id: "01",
+    title: "AI News Hub",
+    subtitle: "Research · AI · Full-Stack",
+    year: "2025",
+    role: "Creator & Researcher",
+    description:
+      "A modular real-time system for multi-source news aggregation, intelligent clustering, AI-powered summarization, and credibility analysis. Accepted at ISED2026, NIT Warangal.",
+    tech: ["Python", "NLP", "Hugging Face", "Machine Learning", "React", "SQLite"],
+    image: "/images/about/DailyRotine2.jpeg",
+    github: "https://github.com/Koushiknani24",
+    accent: "#c5562a",
   },
   {
-    id: "web-design",
-    number: "02",
-    title: "Web & UI Design",
-    description: "Designing modern, responsive interfaces that are both functional and visually engaging.",
-    items: ["Website design", "UI/UX", "Responsive design", "Prototyping", "User-focused interfaces"],
-    imagePath: "/images/projects/chams-construction/home.png", // Best website design
+    id: "02",
+    title: "CHAMS Construction",
+    subtitle: "Web Design · Corporate Website",
+    year: "2024",
+    role: "Designer & Developer",
+    description:
+      "A premium corporate website for a construction company — designed with a strong editorial aesthetic, responsive layout, and focus on professional credibility.",
+    tech: ["React", "Next.js", "Tailwind CSS", "JavaScript"],
+    image: "/images/experience/Internship.jpeg",
+    accent: "#800020",
   },
   {
-    id: "ai-automation",
-    number: "03",
-    title: "AI & Automation",
-    description: "Exploring AI to make software and everyday workflows smarter and more automated.",
-    items: ["AI-powered applications", "Automation workflows", "AI integrations", "Intelligent tools", "Experimenting with emerging AI technologies"],
-    imagePath: "/images/projects/ai-news-hub/home.png", // AI/Automation visual (AI News Hub)
+    id: "03",
+    title: "Academic SGPA & CGPA Calculator",
+    subtitle: "Tool · Utility · Student",
+    year: "2024",
+    role: "Creator",
+    description:
+      "A clean, intuitive calculator for students to track their academic performance. Simple UI designed around real student needs.",
+    tech: ["JavaScript", "HTML", "CSS", "React"],
+    image: "/images/about/DailyRotine.jpeg",
+    accent: "#4a0010",
   },
-  {
-    id: "business-websites",
-    number: "04",
-    title: "Business Websites",
-    description: "Helping local businesses, startups and organizations turn their requirements into useful digital products.",
-    items: ["Business websites", "Landing pages", "Web applications", "Maintenance", "Feature improvements", "Digital solutions"],
-    imagePath: "/images/projects/chams-offshore/home.png", // CHAMS Offshore screenshot
-  },
-  {
-    id: "product-building",
-    number: "05",
-    title: "Product Building",
-    description: "From an idea to a working product — understanding the problem, designing the experience, building the software and improving it.",
-    items: [],
-    imagePath: "/images/experience/Internship.jpeg", // Collaboration/product visual
-  },
-  {
-    id: "research",
-    number: "06",
-    title: "Research & Real-World Experience",
-    description: "Applying software and problem-solving skills to real-world projects and research.",
-    items: ["GARRF internship — 2025–2026", "Research Paper — NIT Warangal, December 2026"],
-    imagePath: "/images/leadership/GarrfImage.jpeg", // Research/academic visual (GARRF)
-  }
 ];
 
-function WorkCard({ category }: { category: WorkCategory }) {
+function ProjectCard({ project, index }: { project: typeof projects[0]; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setIsVisible(true); observer.disconnect(); }
+      },
+      { threshold: 0.15 }
+    );
+    if (cardRef.current) observer.observe(cardRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    // Calculate rotation (-5 to 5 degrees)
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    const rotateX = ((y - centerY) / centerY) * -5;
-    const rotateY = ((x - centerX) / centerX) * 5;
-    
-    setRotation({ x: rotateX, y: rotateY });
-  };
-
-  const handleMouseLeave = () => {
-    setRotation({ x: 0, y: 0 });
-    setIsHovered(false);
+    const rect = cardRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rx = ((e.clientY - cy) / (rect.height / 2)) * -4;
+    const ry = ((e.clientX - cx) / (rect.width / 2)) * 4;
+    setRotation({ x: rx, y: ry });
   };
 
   return (
-    <div 
-      className={cn(
-        "relative w-full mb-32 perspective-1000",
-        category.featured ? "mb-40" : ""
-      )}
-      style={{ perspective: "1000px" }}
+    <div
+      ref={cardRef}
+      className="w-full"
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: isVisible ? "translateY(0)" : "translateY(40px)",
+        transition: `opacity 0.8s ease ${index * 0.15}s, transform 0.8s ease ${index * 0.15}s`,
+      }}
     >
-      <div 
-        ref={cardRef}
-        className="relative w-full transform-style-3d transition-transform duration-200 ease-out flex flex-col lg:flex-row gap-12"
-        style={{
-          transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
-          transformStyle: "preserve-3d"
-        }}
+      <div
+        className="relative w-full"
+        style={{ perspective: "1000px" }}
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handleMouseLeave}
+        onMouseLeave={() => { setIsHovered(false); setRotation({ x: 0, y: 0 }); }}
       >
-        {/* Visual Side */}
-        <div 
-          className={cn(
-            "relative w-full rounded-xl overflow-hidden bg-zinc-900 border border-white/10 shadow-2xl transition-all duration-500",
-            category.featured ? "lg:w-2/3 aspect-[16/9]" : "lg:w-1/2 aspect-[4/3]",
-            isHovered ? "shadow-burnt-sienna/20 border-white/20" : ""
-          )}
+        <div
+          className="relative flex flex-col lg:flex-row gap-8 lg:gap-12 w-full"
           style={{
-            transform: isHovered ? "translateZ(30px)" : "translateZ(0px)",
+            transform: `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`,
+            transformStyle: "preserve-3d",
+            transition: isHovered
+              ? "transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94)"
+              : "transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
           }}
         >
-          {/* Browser Top Bar Mockup */}
-          <div className="absolute top-0 left-0 w-full h-8 bg-zinc-950 flex items-center px-4 gap-2 z-20 border-b border-white/10">
-             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-             <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-          </div>
-          
-          <img 
-            src={category.imagePath} 
-            alt={category.title} 
-            className="absolute inset-0 w-full h-full object-cover pt-8 opacity-80 group-hover:opacity-100 transition-opacity"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = `https://placehold.co/1200x800/1a1a1a/4a4a4a?text=${encodeURIComponent(category.title)}`;
+          {/* Image: Browser Mockup */}
+          <div
+            className="browser-mockup w-full lg:w-[55%] flex-shrink-0"
+            style={{
+              transform: isHovered ? "translateZ(20px)" : "translateZ(0)",
+              transition: "transform 0.4s ease",
             }}
-          />
-        </div>
-
-        {/* Content Side */}
-        <div 
-          className={cn(
-            "flex flex-col justify-center transition-all duration-500",
-            category.featured ? "lg:w-1/3" : "lg:w-1/2"
-          )}
-          style={{
-            transform: isHovered ? "translateZ(50px)" : "translateZ(0px)",
-          }}
-        >
-          <div className="flex items-center gap-4 mb-4">
-            <span className="text-burnt-sienna font-mono text-sm">{category.number}</span>
-            <span className="text-bone-white/60 text-sm tracking-wider uppercase">Capabilities</span>
+          >
+            <div className="browser-bar">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
+              <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
+              <div
+                className="ml-3 flex-1 h-4 rounded-sm flex items-center px-2"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  maxWidth: "200px",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "0.55rem",
+                    color: "rgba(255,255,255,0.2)",
+                    fontFamily: "'JetBrains Mono', monospace",
+                    letterSpacing: "0.05em",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {project.title.toLowerCase().replace(/\s+/g, "-")}.vercel.app
+                </span>
+              </div>
+            </div>
+            <div className="relative aspect-video overflow-hidden">
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-full object-cover"
+                style={{
+                  transform: isHovered ? "scale(1.04)" : "scale(1)",
+                  transition: "transform 0.6s ease",
+                  filter: isHovered ? "brightness(1.05)" : "brightness(0.8)",
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    `https://placehold.co/1200x675/141414/2a2a2a?text=${encodeURIComponent(project.title)}`;
+                }}
+              />
+              {/* Accent gradient overlay */}
+              <div
+                className="absolute inset-0 opacity-0 transition-opacity duration-500 pointer-events-none"
+                style={{
+                  background: `linear-gradient(135deg, ${project.accent}20 0%, transparent 60%)`,
+                  opacity: isHovered ? 0.6 : 0,
+                }}
+              />
+            </div>
           </div>
-          
-          <h3 className="text-4xl md:text-5xl font-bold text-bone-white mb-6 flex items-center gap-4">
-            {category.title}
-          </h3>
-          
-          <p className="text-bone-white/70 text-lg mb-8 leading-relaxed">
-            {category.description}
-          </p>
-          
-          {category.items.length > 0 && (
+
+          {/* Content */}
+          <div
+            className="flex-1 flex flex-col justify-center"
+            style={{
+              transform: isHovered ? "translateZ(30px)" : "translateZ(0)",
+              transition: "transform 0.4s ease",
+            }}
+          >
+            {/* Project number */}
+            <div className="flex items-center gap-3 mb-4">
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                  fontSize: "0.6rem",
+                  color: "#c5562a",
+                  letterSpacing: "0.15em",
+                }}
+              >
+                {project.id}
+              </span>
+              <div style={{ height: "1px", width: "2rem", background: "rgba(197,86,42,0.3)" }} />
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                  fontSize: "0.55rem",
+                  color: "rgba(240,235,224,0.3)",
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {project.subtitle}
+              </span>
+            </div>
+
+            <h3
+              className="mb-3"
+              style={{
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "clamp(1.5rem, 3vw, 2.5rem)",
+                fontWeight: 800,
+                color: "#f0ebe0",
+                letterSpacing: "-0.025em",
+                lineHeight: 1.05,
+              }}
+            >
+              {project.title}
+            </h3>
+
+            {/* Meta */}
+            <div className="flex gap-4 mb-5">
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                  fontSize: "0.6rem",
+                  color: "rgba(240,235,224,0.3)",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                {project.year}
+              </span>
+              <span style={{ color: "rgba(240,235,224,0.1)", fontSize: "0.6rem" }}>·</span>
+              <span
+                style={{
+                  fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                  fontSize: "0.6rem",
+                  color: "rgba(240,235,224,0.3)",
+                  letterSpacing: "0.1em",
+                }}
+              >
+                {project.role}
+              </span>
+            </div>
+
+            <p
+              className="mb-6"
+              style={{
+                fontFamily: "var(--font-inter), sans-serif",
+                fontSize: "0.95rem",
+                lineHeight: 1.7,
+                color: "rgba(240,235,224,0.55)",
+              }}
+            >
+              {project.description}
+            </p>
+
+            {/* Tech stack */}
             <div className="flex flex-wrap gap-2 mb-8">
-              {category.items.map(item => (
-                <span key={item} className="px-3 py-1 rounded-full border border-white/10 text-xs font-mono text-bone-white/80 bg-white/5">
-                  {item}
+              {project.tech.map((t) => (
+                <span
+                  key={t}
+                  style={{
+                    padding: "0.25rem 0.75rem",
+                    borderRadius: "100px",
+                    border: "1px solid rgba(240,235,224,0.08)",
+                    fontFamily: "'JetBrains Mono', 'Courier New', monospace",
+                    fontSize: "0.6rem",
+                    color: "rgba(240,235,224,0.45)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {t}
                 </span>
               ))}
             </div>
-          )}
+
+            {/* Links */}
+            <div className="flex gap-4">
+              {project.github && (
+                <a
+                  href={project.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5"
+                  style={{
+                    fontFamily: "var(--font-inter), sans-serif",
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    color: "#c5562a",
+                    textDecoration: "none",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  GitHub <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -177,18 +294,51 @@ function WorkCard({ category }: { category: WorkCategory }) {
 
 export function ProjectsSection() {
   return (
-    <section id="work" className="relative w-full min-h-screen bg-premium-black py-24 border-t border-white/5">
-      <div className="container mx-auto px-6 md:px-12 relative z-10">
-        <h2 className="text-sm font-bold tracking-widest text-burnt-sienna uppercase mb-4 text-center">
-          Work
-        </h2>
-        <h3 className="text-5xl md:text-6xl font-bold text-bone-white mb-24 tracking-tighter text-center">
-          Projects & Independent Work
-        </h3>
-        
-        <div className="flex flex-col mt-20">
-          {workCategories.map((category) => (
-            <WorkCard key={category.id} category={category} />
+    <section
+      id="work"
+      className="relative w-full bg-[#080808] py-28 md:py-36 overflow-hidden"
+      style={{ borderTop: "1px solid rgba(240, 235, 224, 0.05)" }}
+    >
+      <div className="max-w-[1400px] mx-auto px-6 md:px-10 lg:px-16">
+
+        {/* Header */}
+        <div className="mb-20 md:mb-24">
+          <div className="section-label">Work</div>
+          <h2
+            className="text-heading mb-4"
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              color: "#f0ebe0",
+            }}
+          >
+            Selected{" "}
+            <span
+              style={{
+                fontFamily: "var(--font-playfair), Georgia, serif",
+                fontStyle: "italic",
+                color: "#c5562a",
+              }}
+            >
+              Projects
+            </span>
+          </h2>
+          <p
+            style={{
+              fontFamily: "var(--font-inter), sans-serif",
+              fontSize: "1rem",
+              color: "rgba(240,235,224,0.4)",
+              maxWidth: "480px",
+              lineHeight: 1.6,
+            }}
+          >
+            A selection of work spanning AI systems, web applications, and digital products.
+          </p>
+        </div>
+
+        {/* Project cards */}
+        <div className="flex flex-col gap-24 md:gap-32">
+          {projects.map((project, i) => (
+            <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </div>
       </div>
