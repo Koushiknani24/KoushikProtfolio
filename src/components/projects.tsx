@@ -164,10 +164,47 @@ const projects = [
     ],
     tech: ["HTML", "CSS", "JavaScript"],
     image: "/images/projects/sgpa-calculator.png",
-    liveUrl: "https://sgpa-calculator.vercel.app",
+    liveUrl: "https://my-project-beta-jade.vercel.app/",
     githubUrl: null,
-    displayUrl: "sgpa-calculator.vercel.app",
+    displayUrl: "my-project-beta-jade.vercel.app",
     accent: "#800020",
+    researchBadge: null,
+  },
+  {
+    id: "07",
+    title: "Outbox — ReachInbox",
+    category: "Email Automation · SaaS · Full-Stack Application",
+    year: "2026",
+    role: "Creator & Developer",
+    description:
+      "A full-stack email scheduling workspace built for the ReachInbox assignment. It lets teams import recipients, schedule durable email campaigns, manage sender limits, search delivery history, and receive Slack alerts when hourly sending caps are reached.",
+    highlights: [
+      "Google OAuth and protected sessions",
+      "CSV and text recipient import with validation",
+      "BullMQ and Redis delayed-job scheduling",
+      "PostgreSQL-backed campaign persistence",
+      "Per-sender hourly limits and delivery pacing",
+      "Elasticsearch delivery-history search",
+      "Slack notifications and Bull Board monitoring",
+    ],
+    tech: [
+      "TypeScript",
+      "React",
+      "Express",
+      "PostgreSQL",
+      "BullMQ",
+      "Redis",
+      "Elasticsearch",
+      "Google OAuth",
+      "Slack API",
+      "Docker",
+      "Google Cloud Run",
+    ],
+    image: "/images/projects/reachinbox-outbox.jpeg",
+    liveUrl: "https://github.com/Koushiknani24/ReachInbox",
+    githubUrl: null,
+    displayUrl: "github.com/Koushiknani24/ReachInbox",
+    accent: "#5d70f5",
     researchBadge: null,
   },
 ];
@@ -267,7 +304,7 @@ function BrowserMockup({
             }}
           >
             <ExternalLink className="w-4 h-4" />
-            Visit Live Site
+            Visit Site
           </span>
         </a>
       </div>
@@ -386,7 +423,7 @@ function CaseStudyPanel({
 
           <div>
             <h4 style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "0.55rem", letterSpacing: "0.22em", textTransform: "uppercase", color: "#c5562a", marginBottom: "0.75rem" }}>
-              04 â€” Live Project
+              04 â€” Project Link
             </h4>
             <div className="flex gap-3 flex-wrap">
               <a
@@ -396,7 +433,7 @@ function CaseStudyPanel({
                 className="inline-flex items-center gap-2"
                 style={{ padding: "0.75rem 1.75rem", borderRadius: "100px", background: project.accent, color: "#f0ebe0", fontFamily: "var(--font-inter), sans-serif", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", textDecoration: "none" }}
               >
-                Visit Live Site <ArrowUpRight className="w-3.5 h-3.5" />
+                Visit Site <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
               {project.githubUrl && (
                 <a
@@ -613,7 +650,7 @@ function ProjectShowcase({
                   (e.currentTarget as HTMLAnchorElement).style.boxShadow = "";
                 }}
               >
-                Live Project <ArrowUpRight className="w-3.5 h-3.5" />
+                Visit Site <ArrowUpRight className="w-3.5 h-3.5" />
               </a>
 
               {project.githubUrl && (
