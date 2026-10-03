@@ -15,7 +15,7 @@ function AbstractObject({ mousePos }: { mousePos: { x: number; y: number } }) {
   const meshRef = useRef<THREE.Mesh>(null);
 
   // Smooth mouse interpolation
-  const targetRotation = useMemo(() => new THREE.Vector2(), []);
+  const targetRotation = useRef(new THREE.Vector2());
   
   useFrame((_, delta) => {
     if (!groupRef.current) return;
@@ -24,14 +24,12 @@ function AbstractObject({ mousePos }: { mousePos: { x: number; y: number } }) {
     const normalizedX = (mousePos.x / 100) * 2 - 1;
     const normalizedY = (mousePos.y / 100) * 2 - 1;
     
-    // eslint-disable-next-line react-hooks/immutability
-    targetRotation.x = normalizedY * 0.1; // subtle tilt
-    // eslint-disable-next-line react-hooks/immutability
-    targetRotation.y = normalizedX * 0.15; // subtle pan
+    targetRotation.current.x = normalizedY * 0.1; // subtle tilt
+    targetRotation.current.y = normalizedX * 0.15; // subtle pan
 
     // Smooth dampening
-    groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetRotation.x, 2, delta);
-    groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetRotation.y, 2, delta);
+    groupRef.current.rotation.x = THREE.MathUtils.damp(groupRef.current.rotation.x, targetRotation.current.x, 2, delta);
+    groupRef.current.rotation.y = THREE.MathUtils.damp(groupRef.current.rotation.y, targetRotation.current.y, 2, delta);
     
     // Slow continuous rotation of the object itself
     if (meshRef.current) {

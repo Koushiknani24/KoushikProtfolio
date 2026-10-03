@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
@@ -58,25 +57,47 @@ export function Navigation() {
       >
         <div className="max-w-[1400px] mx-auto px-6 md:px-10 flex items-center justify-between">
 
-          {/* Left: Logo */}
+          {/* Left: K Monogram */}
           <a
             href="#"
             onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
-            className="flex items-center gap-2.5 group"
+            className="group flex items-center justify-center"
+            aria-label="Back to top"
+            style={{ textDecoration: "none" }}
           >
-            <Image
-              src="/images/profile/Koushik.jpeg"
-              alt="Koushik"
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-full border border-bone-white/50 object-cover object-top transition-all duration-300 group-hover:border-burnt-sienna"
-            />
-            <span
-              className="text-bone-white/80 font-medium text-sm tracking-wide hidden sm:block transition-colors group-hover:text-bone-white"
-              style={{ fontFamily: "var(--font-inter), sans-serif", letterSpacing: "0.04em" }}
+            <div
+              className="relative flex items-center justify-center"
+              style={{
+                width: "36px",
+                height: "36px",
+                borderRadius: "10px",
+                border: "1px solid rgba(197,86,42,0.25)",
+                background: "rgba(197,86,42,0.06)",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(197,86,42,0.6)";
+                (e.currentTarget as HTMLElement).style.background = "rgba(197,86,42,0.12)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(197,86,42,0.25)";
+                (e.currentTarget as HTMLElement).style.background = "rgba(197,86,42,0.06)";
+              }}
             >
-              KOUSHIK
-            </span>
+              <span
+                style={{
+                  fontFamily: "var(--font-inter), sans-serif",
+                  fontSize: "0.875rem",
+                  fontWeight: 800,
+                  color: "#c5562a",
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1,
+                  userSelect: "none",
+                }}
+              >
+                K
+              </span>
+            </div>
           </a>
 
           {/* Center: Desktop Links */}

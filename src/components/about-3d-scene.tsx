@@ -5,15 +5,15 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, Preload, Line, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
+const node1Pos = new THREE.Vector3(-1.5, 1, 0);
+const node2Pos = new THREE.Vector3(0, -0.5, 1);
+const node3Pos = new THREE.Vector3(1.5, 1, -0.5);
+
 function IdeasCodeProductNodes() {
   const groupRef = useRef<THREE.Group>(null);
   
-  // Nodes positions for Ideas, Code, Product
-  const node1Pos = new THREE.Vector3(-1.5, 1, 0);
-  const node2Pos = new THREE.Vector3(0, -0.5, 1);
-  const node3Pos = new THREE.Vector3(1.5, 1, -0.5);
-  
   // Animated flowing path
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lineRef = useRef<any>(null);
   const linePoints = useMemo(() => {
     const curve = new THREE.CatmullRomCurve3([

@@ -1,8 +1,7 @@
-/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, ArrowDown } from "lucide-react";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
@@ -12,8 +11,6 @@ export function PortfolioHero() {
   const imageWrapRef = useRef<HTMLDivElement>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const maskSizeRef = useRef(0);
-  const targetMaskRef = useRef(0);
   const mouseXRef = useRef(50);
   const mouseYRef = useRef(50);
   const rafRef = useRef<number>(0);
@@ -26,11 +23,6 @@ export function PortfolioHero() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
-  const getMaskSize = useCallback(() => {
-    if (isMobile) return Math.min(window.innerWidth * 0.58, 240);
-    return Math.min(window.innerWidth * 0.24, 380);
-  }, [isMobile]);
-
   // Smooth animation loop
   useEffect(() => {
     const animate = () => {
@@ -40,10 +32,6 @@ export function PortfolioHero() {
         return;
       }
 
-      // Lerp mask size
-      maskSizeRef.current += (targetMaskRef.current - maskSizeRef.current) * 0.1;
-
-      container.style.setProperty("--mask-size", `${maskSizeRef.current}px`);
       container.style.setProperty("--mouse-x", `${mouseXRef.current}%`);
       container.style.setProperty("--mouse-y", `${mouseYRef.current}%`);
 
@@ -68,8 +56,6 @@ export function PortfolioHero() {
 
       mouseXRef.current = x;
       mouseYRef.current = y;
-      targetMaskRef.current = getMaskSize();
-
       // Subtle parallax on content
       const px = (e.clientX / window.innerWidth - 0.5) * 2;
       const py = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -77,18 +63,12 @@ export function PortfolioHero() {
       container.style.setProperty("--parallax-y", `${py}`);
     };
 
-    const handlePointerLeave = () => {
-      targetMaskRef.current = 0;
-    };
-
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    container.addEventListener("pointerleave", handlePointerLeave, { passive: true });
 
     return () => {
       window.removeEventListener("pointermove", handlePointerMove);
-      container.removeEventListener("pointerleave", handlePointerLeave);
     };
-  }, [hasInteracted, getMaskSize]);
+  }, [hasInteracted]);
 
   return (
     <section
@@ -113,7 +93,6 @@ export function PortfolioHero() {
           transition: "transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
           "--mouse-x": "50%",
           "--mouse-y": "50%",
-          "--mask-size": "0px",
         } as React.CSSProperties}
       >
         {/* Base Image */}
@@ -167,8 +146,8 @@ export function PortfolioHero() {
           style={{
             background:
               "linear-gradient(90deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.55) 30%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0) 75%)",
-            maskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
-            WebkitMaskImage: `radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0%, transparent calc(var(--mask-size) - 55px), black var(--mask-size))`,
+            maskImage: "radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0, transparent calc(var(--reveal-radius) + var(--reveal-feather)), black calc(var(--reveal-radius) + var(--reveal-feather) + 1px))",
+            WebkitMaskImage: "radial-gradient(circle at var(--mouse-x) var(--mouse-y), transparent 0, transparent calc(var(--reveal-radius) + var(--reveal-feather)), black calc(var(--reveal-radius) + var(--reveal-feather) + 1px))",
           }}
         />
       </div>

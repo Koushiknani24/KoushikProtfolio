@@ -1,5 +1,7 @@
 import { PortfolioHero } from "@/components/portfolio-hero";
 import { AboutSection } from "@/components/about";
+import { WhatIBuildSection } from "@/components/what-i-build";
+import { ResumeCard } from "@/components/resume-card";
 import { ServicesSection } from "@/components/services";
 import { ProjectsSection } from "@/components/projects";
 import { ExperienceSection } from "@/components/experience";
@@ -18,6 +20,8 @@ export default function Home() {
       <PortfolioHero />
       <MarqueeBanner />
       <AboutSection />
+      <WhatIBuildSection />
+      <ResumeCard />
       <ServicesSection />
       <ProjectsSection />
       <ExperienceSection />

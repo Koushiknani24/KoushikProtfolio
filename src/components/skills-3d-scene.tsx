@@ -19,7 +19,7 @@ function Constellation() {
   
   // Create nodes with fixed positions so lines don't jitter
   const nodes = useMemo(() => {
-    const temp: { id: number; category: any; position: THREE.Vector3 }[] = [];
+    const temp: { id: number; category: typeof skillCategories[0]; position: THREE.Vector3 }[] = [];
     const radius = 3;
     
     skillCategories.forEach((category, i) => {
